@@ -1,13 +1,16 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
-import App from "./App";
-import reportWebVitals from "./reportWebVitals";
+import "./index.css"; // Import global styles
+import App from "./App"; // Import the App component
+import reportWebVitals from "./reportWebVitals"; // For performance monitoring
 
-import { BrowserRouter } from "react-router-dom";
-import { ContextProvider } from "./Context";
+import { BrowserRouter } from "react-router-dom"; // Import BrowserRouter
+import { ContextProvider } from "./Context"; // Import the context provider
 
+// Create the root element for rendering
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
+// Render the app with Router and Context provider wrapping the App
 root.render(
   <React.StrictMode>
     <BrowserRouter>

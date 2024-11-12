@@ -1,8 +1,9 @@
-import { createContext, useState } from "react";
+import React, { createContext, useState } from "react";
 
 export const MusicContext = createContext();
 
 export const ContextProvider = ({ children }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [likedMusic, setLikedMusic] = useState([]);
   const [pinnedMusic, setPinnedMusic] = useState([]);
@@ -11,6 +12,8 @@ export const ContextProvider = ({ children }) => {
   return (
     <MusicContext.Provider
       value={{
+        isAuthenticated,
+        setIsAuthenticated, // Make sure this is included in the context value
         isLoading,
         setIsLoading,
         likedMusic,

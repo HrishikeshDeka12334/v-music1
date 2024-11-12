@@ -1,15 +1,21 @@
 import React, { useContext } from "react";
-
 import { Link } from "react-router-dom";
 import { MusicContext } from "../Context";
 import PinnedMusic from "./PinnedMusic";
 import LikedMusic from "./LikedMusic";
+import { FaHistory } from "react-icons/fa"; // Import an icon for Recently Played
 
 const Navbar = ({ keyword, handleKeyPress, setKeyword, fetchMusicData }) => {
   const musicContext = useContext(MusicContext);
   const likedMusic = musicContext.likedMusic;
   const pinnedMusic = musicContext.pinnedMusic;
   const setResultOffset = musicContext.setResultOffset;
+
+  // Handle fetching of recently played music
+  const handleRecentlyPlayedClick = () => {
+    fetchMusicData("track", "recently-played"); // This assumes that fetchMusicData is already modified to fetch recently played songs
+  };
+
   return (
     <>
       <nav className="navbar navbar-dark navbar-expand-lg bg-dark sticky-top">
@@ -33,6 +39,13 @@ const Navbar = ({ keyword, handleKeyPress, setKeyword, fetchMusicData }) => {
               className="btn btn-secondary btn-sm mx-1"
             >
               <i className="bi bi-heart-fill"></i> {likedMusic.length}
+            </button>
+            {/* Recently Played Button */}
+            <button
+              onClick={handleRecentlyPlayedClick}
+              className="btn btn-secondary btn-sm mx-1"
+            >
+              <FaHistory /> Recently Played
             </button>
           </div>
 
@@ -62,6 +75,7 @@ const Navbar = ({ keyword, handleKeyPress, setKeyword, fetchMusicData }) => {
         </div>
       </nav>
 
+      {/* Pinned Music Modal */}
       <div
         className="modal fade modal-xl"
         id="exampleModal"
@@ -89,6 +103,7 @@ const Navbar = ({ keyword, handleKeyPress, setKeyword, fetchMusicData }) => {
         </div>
       </div>
 
+      {/* Liked Music Modal */}
       <div
         className="modal fade modal-xl"
         id="likedMusicModal"

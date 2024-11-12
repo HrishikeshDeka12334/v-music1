@@ -4,68 +4,77 @@ import { MusicContext } from "../Context";
 function Card({ element }) {
   const musicContext = useContext(MusicContext);
   const likedMusic = musicContext.likedMusic;
-  const setlikedMusic = musicContext.setLikedMusic;
+  const setLikedMusic = musicContext.setLikedMusic;
   const pinnedMusic = musicContext.pinnedMusic;
-  const setpinnedMusic = musicContext.setPinnedMusic;
+  const setPinnedMusic = musicContext.setPinnedMusic;
 
+  // Pin button handler
   const handlePin = () => {
-    let pinnedMusic = localStorage.getItem("pinnedMusic");
-    pinnedMusic = JSON.parse(pinnedMusic);
+    let pinnedMusic = JSON.parse(localStorage.getItem("pinnedMusic") || "[]");
     let updatedPinnedMusic = [];
+
+    // Check if the song is already pinned
     if (pinnedMusic.some((item) => item.id === element.id)) {
       updatedPinnedMusic = pinnedMusic.filter((item) => item.id !== element.id);
-      setpinnedMusic(updatedPinnedMusic);
+      setPinnedMusic(updatedPinnedMusic);
       localStorage.setItem("pinnedMusic", JSON.stringify(updatedPinnedMusic));
     } else {
+      // Limit pinning to 4 items
       if (pinnedMusic.length >= 4) {
+        alert("You can only pin up to 4 songs.");
+        return;
       }
-      updatedPinnedMusic = pinnedMusic;
-      updatedPinnedMusic.push(element);
-      setpinnedMusic(updatedPinnedMusic);
+      updatedPinnedMusic = [...pinnedMusic, element];
+      setPinnedMusic(updatedPinnedMusic);
       localStorage.setItem("pinnedMusic", JSON.stringify(updatedPinnedMusic));
     }
   };
 
+  // Like button handler
   const handleLike = () => {
-    let likedMusic = localStorage.getItem("likedMusic");
-    likedMusic = JSON.parse(likedMusic);
+    let likedMusic = JSON.parse(localStorage.getItem("likedMusic") || "[]");
     let updatedLikedMusic = [];
+
+    // Check if the song is already liked
     if (likedMusic.some((item) => item.id === element.id)) {
       updatedLikedMusic = likedMusic.filter((item) => item.id !== element.id);
-      setlikedMusic(updatedLikedMusic);
+      setLikedMusic(updatedLikedMusic);
       localStorage.setItem("likedMusic", JSON.stringify(updatedLikedMusic));
     } else {
-      updatedLikedMusic = likedMusic;
-      updatedLikedMusic.push(element);
-      setlikedMusic(updatedLikedMusic);
+      updatedLikedMusic = [...likedMusic, element];
+      setLikedMusic(updatedLikedMusic);
       localStorage.setItem("likedMusic", JSON.stringify(updatedLikedMusic));
     }
   };
 
+  // Load liked music from local storage
   useEffect(() => {
-    const localLikedMusic = JSON.parse(localStorage.getItem("likedMusic"));
-    setlikedMusic(localLikedMusic);
-  }, [setlikedMusic]);
+    const localLikedMusic = JSON.parse(localStorage.getItem("likedMusic") || "[]");
+    setLikedMusic(localLikedMusic);
+  }, [setLikedMusic]);
 
   return (
     <div key={element.id} className="col-lg-3 col-md-6 py-2">
       <div className="card">
         <div className="ratio ratio-1x1 bg-secondary bg-opacity-25">
           <img
-            src={element.album.images[0].url}
+            // Safely access the image URL with optional chaining
+            src={element?.album?.images?.[0]?.url || element?.images?.[0]?.url || 'default-image-url'}
             className="card-img-top"
-            alt="..."
+            alt={element?.name || 'Unknown Track'} // Fallback text for missing name
           />
         </div>
 
         <div className="card-body">
           <h5 className="card-title d-flex justify-content-between">
-            {element.name}
+            {element?.name || 'Unknown Track'} {/* Fallback for missing name */}
             <div className="add-options d-flex align-items-start">
+              {/* Pin button */}
               {pinnedMusic.some((item) => item.id === element.id) ? (
                 <button
                   onClick={handlePin}
                   className="btn btn-outline-dark mx-1"
+                  title="Unpin this song"
                 >
                   <i className="bi bi-pin-angle-fill"></i>
                 </button>
@@ -73,10 +82,13 @@ function Card({ element }) {
                 <button
                   onClick={handlePin}
                   className="btn btn-outline-dark mx-1"
+                  title="Pin this song"
                 >
                   <i className="bi bi-pin-angle"></i>
                 </button>
               )}
+              
+              {/* Like button */}
               {likedMusic.some((item) => item.id === element.id) ? (
                 <button onClick={handleLike} className="btn btn-outline-dark">
                   <i className="bi bi-heart-fill text-danger"></i>
@@ -86,49 +98,13 @@ function Card({ element }) {
                   <i className="bi bi-heart"></i>
                 </button>
               )}
-              {/* 
-              <div className="dropdown mx-1">
-                <button
-                  className="btn btn-secondary dropdown-toggle"
-                  type="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <i className="bi bi-list"></i>
-                </button>
-                <ul className="dropdown-menu">
-                  <li>
-                    {pinnedMusic.some((item) => item.id === element.id) ? (
-                      <button
-                        onClick={handlePin}
-                        className="dropdown-item text-secondary"
-                      >
-                        Unpin
-                      </button>
-                    ) : (
-                      <button
-                        onClick={handlePin}
-                        className="dropdown-item text-secondary"
-                      >
-                        Pin
-                      </button>
-                    )}
-                  </li>
-
-                  <li>
-                    <button className="dropdown-item text-secondary">
-                      Your Playlist
-                    </button>
-                  </li>
-                </ul>
-              </div> */}
             </div>
           </h5>
-          <p className="card-text">Artist: {element.album.artists[0].name}</p>
-          <p className="card-text">
-            Release date: {element.album.release_date}
-          </p>
-          <audio src={element.preview_url} controls className="w-100"></audio>
+          {/* Safely access artist name and release date */}
+          <p className="card-text">Artist: {element?.album?.artists?.[0]?.name || 'Unknown Artist'}</p>
+          <p className="card-text">Release date: {element?.album?.release_date || 'Unknown Release Date'}</p>
+          {/* Safely access preview URL */}
+          <audio src={element?.preview_url || ''} controls className="w-100"></audio>
         </div>
       </div>
     </div>
